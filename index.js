@@ -147,6 +147,20 @@ app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
 
 
 
+   // user role update
+   app.patch('/users/:id/block', verifyFireToken, verifyAdmin, async (req, res) => {
+    const id = req.params.id;
+    const blockInfo = req.body;
+    const query = { _id: new ObjectId(id) }
+    const updateDoc = {
+        $set: {
+            blocked: blockInfo.blocked,
+            workStatus: blockInfo.workStatus
+        }
+    }
+    const result = await userCollection.updateOne(query, updateDoc)
+    res.send(result);
+})
 
 
 
