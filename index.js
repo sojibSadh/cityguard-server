@@ -180,6 +180,51 @@ app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
 
 
 
+ // issues api here
+ app.post('/issues', verifyFireToken, async (req, res) => {
+    try {
+        const userEmail = req.decoded_email;
+        const body = req.body;
+
+        // basic validation
+        if (!body.title || !body.category || !body.location || !body.description) {
+            return res.status(400).send({ message: 'Missing required fields' });
+        }
+
+        const issue = {
+            title: body.title,
+            image: body.image || '', // image url
+            category: body.category,
+            status: body.status || 'pending',
+            priority: body.priority || 'Normal',
+            location: body.location,
+            description: body.description,
+            upvotes: 0,
+            boosted: body.boosted || false,
+            authorEmail: userEmail,
+            voters: [], // store voter emails
+            timeline: [
+                {
+                    status: 'issue_reported',
+                    note: 'Issue reported by citizen',
+                    by: userEmail,
+                    createdAt: new Date()
+                }
+            ],
+            createdAt: new Date()
+        };
+
+        const result = await issuesCollection.insertOne(issue);
+        res.send({ success: true, insertedId: result.insertedId });
+    } catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+});
+
+
+
+
+
 
 
 
