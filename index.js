@@ -270,6 +270,17 @@ app.get('/feature-issues', async (req, res) => {
 });
 
 
+  // Get single issue10
+  app.get('/issues/:id', verifyFireToken, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const issue = await issuesCollection.findOne({ _id: new ObjectId(id) });
+        if (!issue) return res.status(404).send({ message: 'Issue not found' });
+        res.send(issue);
+    } catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+});
 
 
 
