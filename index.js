@@ -221,7 +221,7 @@ app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
     }
 });
 
- // Get All Issues (with server-side filters, search & pagination8
+ // Get All Issues (with server-side filters, search & pagination
  app.get('/issues', async (req, res) => {
     try {
         const { page = 1, limit = 9, category, status, priority, search } = req.query;
@@ -258,7 +258,7 @@ app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
 });
 
 
-// Get All Issues (with server-side filters, search & pagination9
+// Get All Issues (with server-side filters, search & pagination
 app.get('/feature-issues', async (req, res) => {
     try {
         const cursor = issuesCollection.find().sort({ boosted: -1, createdAt: -1 }).limit(6);
@@ -270,7 +270,7 @@ app.get('/feature-issues', async (req, res) => {
 });
 
 
-  // Get single issue10
+  // Get single issue
   app.get('/issues/:id', verifyFireToken, async (req, res) => {
     try {
         const id = req.params.id;
@@ -282,7 +282,7 @@ app.get('/feature-issues', async (req, res) => {
     }
 });
 
-    // Get All Issues by email;11
+    // Get All Issues by email;
     app.get('/my-issues-email', async (req, res) => {
         try {
             const { email, page = 1, limit = 10, category, status, priority, search } = req.query;
@@ -319,7 +319,7 @@ app.get('/feature-issues', async (req, res) => {
         }
     });
 
-   //  Update  by ID12
+   //  Update  by ID
    app.patch('/issues/:id', verifyFireToken, async (req, res) => {
     const id = req.params.id;
     const updatedData = req.body;
@@ -346,7 +346,7 @@ app.get('/feature-issues', async (req, res) => {
 
 
 
-   // Delete issue (only author or admin)13
+   // Delete issue (only author or admin)
    app.delete('/issues/:id', verifyFireToken, async (req, res) => {
     try {
         const id = req.params.id;
@@ -394,7 +394,7 @@ app.get('/feature-issues', async (req, res) => {
     });
 
 
-  // create-payment-intent 15
+  // create-payment-intent
   app.post('/create-payment-intent', async (req, res) => {
     const { issue, amount, issueId, email } = req.body;
 
