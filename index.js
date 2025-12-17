@@ -95,6 +95,24 @@ async function run() {
     res.send(result);
 });
 
+  // Register()
+  app.post('/users', async (req, res) => {
+    const user = req.body;
+    user.role = 'citizen';
+    user.subscription = false; // free | premium
+    user.blocked = false;
+    user.issueCount = 0,
+        user.createdAt = new Date();
+    const email = user.email;
+    const userExist = await userCollection.findOne({ email })
+
+    if (userExist) {
+        return res.send({ message: 'user exits' })
+    }
+
+    const result = await userCollection.insertOne(user);
+    res.send(result);
+})
 
 
 
