@@ -83,7 +83,17 @@ async function run() {
             return result;
         }
 
-
+   // UserManegement()
+   app.get('/users', verifyFireToken,  async (req, res) => {
+    const searchText = req.query.searchText;
+    const query = {};
+    if (searchText) {
+        query.displayName = { $regex: searchText, $options: 'i' }
+    }
+    const cursor = userCollection.find(query).sort({ createdAt: -1 });
+    const result = await cursor.toArray();
+    res.send(result);
+});
 
 
 
