@@ -117,6 +117,43 @@ async function run() {
 
 
 
+const verifyAdmin = async (req, res, next) => {
+    const email = req.decoded_email;
+    const query = { email }
+
+    const user = await userCollection.findOne(query);
+    if (!user || user.role !== 'admin') {
+        return res.status(403).send({ message: "forbiden page" })
+    };
+    next();
+};
+
+
+
+// user role update
+app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
+    const id = req.params.id;
+    const roleInfo = req.body;
+    const query = { _id: new ObjectId(id) }
+    const updateDoc = {
+        $set: {
+            role: roleInfo.role,
+            workStatus: roleInfo.workStatus
+        }
+    }
+    const result = await userCollection.updateOne(query, updateDoc)
+    res.send(result);
+})
+
+
+
+
+
+
+
+
+
+
 
 
 
