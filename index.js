@@ -357,6 +357,41 @@ app.get('/feature-issues', async (req, res) => {
     }
 });
 
+     // Upvote issue14
+     app.patch('/issues/upvote/:id', verifyFireToken, async (req, res) => {
+        try {
+            const issueId = req.params.id;
+            const userEmail = req.decoded_email; // token থেকে আসবে
+
+            const issue = await issuesCollection.findOne({ _id: new ObjectId(issueId) });
+
+            if (!issue) return res.status(404).send({ message: "Issue not found" });
+
+            // Can't upvote own issue
+            if (issue.authorEmail === userEmail) {
+                return res.status(400).send({ message: "You can't upvote your own issue" });
+            }
+
+            // Prevent double upvote
+            if (issue.upvotedUsers?.includes(userEmail)) {
+                return res.status(400).send({ message: "Already upvoted" });
+            }
+
+            // Update
+            const result = await issuesCollection.updateOne(
+                { _id: new ObjectId(issueId) },
+                {
+                    $inc: { upvotes: 1 },
+                    $push: { upvotedUsers: userEmail }
+                }
+            );
+
+            res.send({ success: true, message: "Upvoted!" });
+
+        } catch (err) {
+            res.status(500).send({ error: err.message });
+        }
+    });
 
 
 
