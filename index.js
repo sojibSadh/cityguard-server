@@ -172,7 +172,11 @@ app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
 });
 
 
-
+ // useSub()
+ app.get("/users/status/:email", verifyFireToken, async (req, res) => {
+    const user = await userCollection.findOne({ email: req.params.email });
+    res.send(user);
+});
 
 
 
