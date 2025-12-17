@@ -319,6 +319,39 @@ app.get('/feature-issues', async (req, res) => {
         }
     });
 
+   //  Update  by ID12
+   app.patch('/issues/:id', verifyFireToken, async (req, res) => {
+    const id = req.params.id;
+    const updatedData = req.body;
+    const email = req.query.email;
+
+    // if (email !== req.token_email) {
+    //     return res.status(403).send({ message: 'forbidden access' });
+    // }
+
+    const filter = { _id: new ObjectId(id) };
+    const updateDoc = {
+        $set: {
+            title: updatedData.title,
+            description: updatedData.description,
+            category: updatedData.category,
+            image: updatedData.image,
+            postedDate: new Date(),
+        }
+    };
+
+    const result = await issuesCollection.updateOne(filter, updateDoc);
+    res.send(result);
+});
+
+
+
+
+
+
+
+
+
 
 
 
