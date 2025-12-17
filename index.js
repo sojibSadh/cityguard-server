@@ -163,6 +163,14 @@ app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
 })
 
 
+   // useRole()
+   app.get('/users/:email/role',verifyFireToken, async (req, res) => {
+    const email = req.params.email;
+    const query = { email };
+    const user = await userCollection.findOne(query);
+    res.send({ role: user?.role || 'citizen' });
+});
+
 
 
 
