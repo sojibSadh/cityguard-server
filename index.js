@@ -394,7 +394,43 @@ app.get('/feature-issues', async (req, res) => {
     });
 
 
+  // create-payment-intent 15
+  app.post('/create-payment-intent', async (req, res) => {
+    const { issue, amount, issueId, email } = req.body;
 
+    const parseAmount = Number(amount) * 100;  // safer
+
+    try {
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'bdt',
+                        unit_amount: parseAmount,
+                        product_data: {
+                            name: issue || "Boost Priority"
+                        }
+                    },
+                    quantity: 1,
+                },
+            ],
+            customer_email: email,
+            mode: 'payment',
+            metadata: {
+                issueId: issueId,
+                issueEmail: email
+            },
+
+            success_url: `${process.env.SITE_DOMAIN}/dashboard/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.SITE_DOMAIN}/dashboard/payment-cancelled`,
+        });
+
+        res.send({ url: session.url });
+
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+});
 
 
 
