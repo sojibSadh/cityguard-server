@@ -282,7 +282,42 @@ app.get('/feature-issues', async (req, res) => {
     }
 });
 
+    // Get All Issues by email;11
+    app.get('/my-issues-email', async (req, res) => {
+        try {
+            const { email, page = 1, limit = 10, category, status, priority, search } = req.query;
+            const query = {};
 
+            if (email) query.authorEmail = email;
+            if (category) query.category = category;
+            if (status) query.status = status;
+            if (priority) query.priority = priority;
+
+            // use text search if 'search' provided
+            if (search) {
+                query.title = { $regex: search, $options: "i" };
+            }
+
+            const skip = (parseInt(page) - 1) * parseInt(limit);
+
+            // boosted first, then sort by createdAt desc (newest)
+            const cursor = issuesCollection.find(query).sort({ boosted: -1, createdAt: -1 }).skip(skip).limit(parseInt(limit));
+            const items = await cursor.toArray();
+            const total = await issuesCollection.countDocuments(query);
+
+            res.send({
+                data: items,
+                meta: {
+                    total,
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    totalPages: Math.ceil(total / parseInt(limit))
+                }
+            });
+        } catch (err) {
+            res.status(500).send({ error: err.message });
+        }
+    });
 
 
 
