@@ -346,7 +346,16 @@ app.get('/feature-issues', async (req, res) => {
 
 
 
-
+   // Delete issue (only author or admin)13
+   app.delete('/issues/:id', verifyFireToken, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await issuesCollection.deleteOne({ _id: new ObjectId(id) });
+        res.send(result);
+    } catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+});
 
 
 
