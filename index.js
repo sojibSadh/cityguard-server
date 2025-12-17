@@ -221,6 +221,55 @@ app.patch('/users/:id/role', verifyFireToken, verifyAdmin, async (req, res) => {
     }
 });
 
+ // Get All Issues (with server-side filters, search & pagination8
+ app.get('/issues', async (req, res) => {
+    try {
+        const { page = 1, limit = 9, category, status, priority, search } = req.query;
+        const query = {};
+
+        if (category) query.category = category;
+        if (status) query.status = status;
+        if (priority) query.priority = priority;
+
+        // use text search if 'search' provided
+        if (search) {
+            query.title = { $regex: search, $options: "i" };
+        }
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
+        // boosted first, then sort by createdAt desc (newest)
+        const cursor = issuesCollection.find(query).sort({ boosted: -1, createdAt: -1 }).skip(skip).limit(parseInt(limit));
+        const items = await cursor.toArray();
+        const total = await issuesCollection.countDocuments(query);
+
+        res.send({
+            data: items,
+            meta: {
+                total,
+                page: parseInt(page),
+                limit: parseInt(limit),
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        });
+    } catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+});
+
+
+// Get All Issues (with server-side filters, search & pagination9
+app.get('/feature-issues', async (req, res) => {
+    try {
+        const cursor = issuesCollection.find().sort({ boosted: -1, createdAt: -1 }).limit(6);
+        const result = await cursor.toArray();
+        res.send(result)
+    } catch (err) {
+        res.status(500).send({ error: err.message });
+    }
+});
+
+
 
 
 
